@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import NoteList from '../NoteLists/NoteList';
+import NoteList from '../NoteList/NoteList';
 import SearchBox from '../SearchBox/SearchBox';
 import Pagination from '../Pagination/Pagination';
-import Modal from '../Modals/Modal';
-import NoteForm from '../NoteForms/NoteForm';
+import Modal from '../Modal/Modal';
+import NoteForm from '../NoteForm/NoteForm';
 import css from './App.module.css';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createNote } from '../../services/noteService';
