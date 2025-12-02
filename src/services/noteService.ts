@@ -5,8 +5,8 @@ const API_URL = 'https://notehub-public.goit.study/api';
 const token = import.meta.env.VITE_NOTEHUB_TOKEN;
 
 export interface FetchNotesResponse {
-  items: Note[];
-  total: number;
+  notes: Note[];
+  totalPages: number;
   page: number;
   perPage: number;
 }
@@ -32,6 +32,7 @@ export const createNote = async (note: CreateNotePayload): Promise<Note> => {
   const response = await axios.post(`${API_URL}/notes`, note, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
   return response.data;
 };
 
