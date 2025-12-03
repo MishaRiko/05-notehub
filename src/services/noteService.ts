@@ -15,7 +15,7 @@ export const fetchNotes = async (
   perPage: number,
   search: string
 ): Promise<FetchNotesResponse> => {
-  const response = await axios.get(`${API_URL}/notes`, {
+  const response = await axios.get<FetchNotesResponse>(`${API_URL}/notes`, {
     params: { page, perPage, search },
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -29,7 +29,7 @@ export interface CreateNotePayload {
 }
 
 export const createNote = async (note: CreateNotePayload): Promise<Note> => {
-  const response = await axios.post(`${API_URL}/notes`, note, {
+  const response = await axios.post<Note>(`${API_URL}/notes`, note, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -37,8 +37,11 @@ export const createNote = async (note: CreateNotePayload): Promise<Note> => {
 };
 
 export const deleteNote = async (id: string): Promise<{ id: string }> => {
-  const response = await axios.delete(`${API_URL}/notes/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await axios.delete<{ id: string }>(
+    `${API_URL}/notes/${id}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   return response.data;
 };
