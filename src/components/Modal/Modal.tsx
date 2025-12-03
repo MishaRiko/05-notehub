@@ -16,10 +16,15 @@ const Modal: FC<ModalProps> = ({ children, onClose }) => {
         onClose();
       }
     };
+
+    const originalStyle = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalStyle;
     };
   }, [onClose]);
 

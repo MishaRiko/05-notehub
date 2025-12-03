@@ -35,12 +35,9 @@ export const createNote = async (note: CreateNotePayload): Promise<Note> => {
   return response.data;
 };
 
-export const deleteNote = async (id: string): Promise<{ id: string }> => {
-  const response = await axios.delete<{ id: string }>(
-    `${API_URL}/notes/${id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+export const deleteNote = async (id: string): Promise<Note> => {
+  const response = await axios.delete<Note>(`${API_URL}/notes/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return response.data;
 };

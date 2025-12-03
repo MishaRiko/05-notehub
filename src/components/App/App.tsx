@@ -26,19 +26,20 @@ function App() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   // const [totalPages, setTotalPages] = useState(1);
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    handleSearch(e.target.value);
+  };
 
-  const handleChange = useDebouncedCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setSearch(e.target.value.trim());
-    },
-    500
-  );
+  const handleSearch = useDebouncedCallback((value: string) => {
+    setSearch(value.trim());
+    setPage(1);
+  }, 500);
 
   const totalPages = data?.totalPages || 0;
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox value={search} onSearch={handleChange} />
+        <SearchBox value={search} onSearch={handleSearchChange} />
         {totalPages > 1 && (
           <Pagination page={page} setPage={setPage} pageCount={totalPages} />
         )}
