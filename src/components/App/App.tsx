@@ -1,56 +1,58 @@
 import { useState } from 'react';
 import NoteList from '../NoteList/NoteList';
+import type { ChangeEvent } from 'react';
 import SearchBox from '../SearchBox/SearchBox';
 import Pagination from '../Pagination/Pagination';
 import Modal from '../Modal/Modal';
 import NoteForm from '../NoteForm/NoteForm';
 import css from './App.module.css';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '../../services/noteService';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useDebouncedCallback } from 'use-debounce';
+import { fetchNotes } from '../../services/noteService';
 
 function App() {
-  const queryClient = useQueryClient();
-  const createNoteMutation = useMutation({
-    mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-      setIsModalOpen(false);
-    },
-  });
+  // const queryClient = useQueryClient();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
 
+  const { data, isLoading, isError, isSuccess } = useQuery({
+    queryKey: ['notes', page, search],
+    queryFn: () => fetchNotes(page, search),
+    placeholderData: keepPreviousData,
+  });
+
   const openModal = () => setIsModalOpen(true);
-  // const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => setIsModalOpen(false);
   // const [totalPages, setTotalPages] = useState(1);
 
+  const handleChange = useDebouncedCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setSearch(e.target.value.trim());
+    },
+    500
+  );
+
+  const totalPages = data?.totalPages || 0;
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox search={search} setSearch={setSearch} />
-        <Pagination page={page} setPage={setPage} pageCount={1} />
-
+        <SearchBox value={search} onSearch={handleChange} />
+        {totalPages > 1 && (
+          <Pagination page={page} setPage={setPage} pageCount={totalPages} />
+        )}
         <button className={css.button} onClick={openModal}>
           Create note +
         </button>
       </header>
-
-      <NoteList page={page} search={search} />
+      {isLoading && <p>Loading...</p>}
+      {isError && <p>Something went wrong...</p>}
+      {isSuccess && data.notes.length > 0 && <NoteList notes={data.notes} />}
+      {/* <NoteList notes={data.notes} /> */}
       {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <NoteForm
-            onCancel={() => setIsModalOpen(false)}
-            onSubmit={values => {
-              createNoteMutation.mutate(values, {
-                onSuccess: () => {
-                  queryClient.invalidateQueries({ queryKey: ['notes'] });
-                  setIsModalOpen(false);
-                },
-              });
-            }}
-          />
+        <Modal onClose={closeModal}>
+          <NoteForm onClose={closeModal} />
         </Modal>
       )}
     </div>

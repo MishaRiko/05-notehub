@@ -15,20 +15,22 @@ const Pagination: FC<PaginationProps> = ({ page, setPage, pageCount }) => {
 
   return (
     <ReactPaginate
+      pageRangeDisplayed={5}
+      marginPagesDisplayed={1}
       previousLabel="<"
       nextLabel=">"
       pageCount={pageCount}
       forcePage={page - 1}
       onPageChange={handlePageChange}
       containerClassName={css.pagination}
-      pageClassName={css.pageItem}
-      pageLinkClassName={css.pageLink}
-      previousClassName={css.pageItem}
-      nextClassName={css.pageItem}
-      previousLinkClassName={css.pageLink}
-      nextLinkClassName={css.pageLink}
+      // pageClassName={css.pageItem}
+      // pageLinkClassName={css.pageLink}
+      // previousClassName={css.pageItem}
+      // nextClassName={css.pageItem}
+      // previousLinkClassName={css.pageLink}
+      // nextLinkClassName={css.pageLink}
       activeClassName={css.active}
-      disabledClassName={css.disabled}
+      // disabledClassName={css.disabled}
     />
   );
 };

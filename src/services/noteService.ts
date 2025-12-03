@@ -7,16 +7,15 @@ const token = import.meta.env.VITE_NOTEHUB_TOKEN;
 export interface FetchNotesResponse {
   notes: Note[];
   totalPages: number;
-  page: number;
-  perPage: number;
+  // page: number;
+  // perPage: number;
 }
 export const fetchNotes = async (
   page: number,
-  perPage: number,
   search: string
 ): Promise<FetchNotesResponse> => {
   const response = await axios.get<FetchNotesResponse>(`${API_URL}/notes`, {
-    params: { page, perPage, search },
+    params: { page, perPage: 12, search },
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;

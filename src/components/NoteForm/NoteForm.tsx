@@ -1,12 +1,14 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage, type FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import type { FC } from 'react';
 import type { NoteTag } from '../../types/note';
 import css from './NoteForm.module.css';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createNote } from '../../services/noteService';
 
 interface NoteFormProps {
-  onSubmit: (values: NoteFormValues) => void;
-  onCancel: () => void;
+  // onSubmit: (values: NoteFormValues) => void;
+  onClose: () => void;
 }
 
 export interface NoteFormValues {
@@ -32,15 +34,29 @@ const initialValues: NoteFormValues = {
   tag: 'Todo',
 };
 
-const NoteForm: FC<NoteFormProps> = ({ onSubmit, onCancel }) => {
+const NoteForm: FC<NoteFormProps> = ({ onClose }) => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      onClose();
+    },
+  });
+
+  const handleSubmit = (
+    values: NoteFormValues,
+    actions: FormikHelpers<NoteFormValues>
+  ) => {
+    mutation.mutate(values);
+    actions.resetForm();
+  };
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={(values, { resetForm }) => {
-        onSubmit(values);
-        resetForm();
-      }}
+      onSubmit={handleSubmit}
     >
       {({ isSubmitting }) => (
         <Form className={css.form}>
@@ -82,7 +98,7 @@ const NoteForm: FC<NoteFormProps> = ({ onSubmit, onCancel }) => {
             <button
               type="button"
               className={css.cancelButton}
-              onClick={onCancel}
+              onClick={onClose}
             >
               Cancel
             </button>
